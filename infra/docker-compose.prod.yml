@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"  # Only if you want to access mongo externally; optional
+
+  backend:
+    image: ramjitripathi31cell/wntd-backend:latest
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
+    ports:
+      - "4500:4500"  # EC2 host port 4500 → container port 4500
+
+  frontend:
+    image: ramjitripathi31cell/wntd-frontend:latest
+    restart: unless-stopped
+    environment:
+      - VITE_API_BASE=http://13.61.12.156:4500/api
+    ports:
+      - "82:80"      # EC2 host port 82 → container port 80
+
+volumes:
+  mongo_data:
