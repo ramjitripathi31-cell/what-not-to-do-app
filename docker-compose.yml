@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  client:
+    build:
+      context: ./client
+    ports:
+      - "8080:80"   # Host:Container
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+    ports:
+      - "4500:4500"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/whatnotdb
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27018:27017"   # Exposed on different host port to avoid clash
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

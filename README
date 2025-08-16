@@ -1,0 +1,5 @@
+# What Not To Do — India Awareness App
+
+Monorepo containing:
+- `client/` → React (Vite)
+- `server/` → Node + Express
