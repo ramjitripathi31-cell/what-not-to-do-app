@@ -10,20 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    
       # 1️⃣ Checkout code
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 2️⃣ Clean disk space (more aggressive)
-      - name: Clean up runner disk
+      - name: Aggressive Free Disk Space
         run: |
-          sudo apt-get remove -y '^dotnet-.*' 'php.*' '^llvm-.*' 'mongodb-org.*' || true
-          sudo apt-get autoremove -y
-          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/share/boost
-          sudo apt-get clean
-          sudo rm -rf /tmp/*
+          echo "Disk usage before cleanup:"
           df -h
-
+          sudo rm -rf /usr/local/lib/android /opt/ghc /usr/share/dotnet /usr/local/share/boost ~/.cache || true
+          sudo apt-get clean
+          sudo docker system prune -af --volumes
+          sudo rm -rf /var/lib/docker/overlay2/*
+          echo "Disk usage after cleanup:"
+          df -h
+          
       # 3️⃣ Prune Docker cache
       - name: Prune Docker
         run: |
