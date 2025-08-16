@@ -58,6 +58,19 @@ jobs:
           cat infra/docker-compose.prod.yml | ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 "sudo tee /opt/wntd/docker-compose.prod.yml > /dev/null"
           cat infra/deploy.sh | ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 "sudo tee /opt/wntd/deploy.sh > /dev/null && sudo chmod +x /opt/wntd/deploy.sh"
 
+      # Install Docker on EC2
+      - name: Install Docker on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 << 'EOF'
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates curl gnupg lsb-release
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+          sudo docker --version
+          EOF
 
       - name: Run deploy script on EC2
         run: |
