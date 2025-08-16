@@ -14,11 +14,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 2️⃣ Clean disk space
+      # 2️⃣ Clean disk space (more aggressive)
       - name: Clean up runner disk
         run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost
+          sudo apt-get remove -y '^dotnet-.*' 'php.*' '^llvm-.*' 'mongodb-org.*'
+          sudo apt-get autoremove -y
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/share/boost
           sudo apt-get clean
+          sudo rm -rf /tmp/*
           df -h
 
       # 3️⃣ Prune Docker cache
@@ -54,6 +57,10 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/wntd-backend:${{ github.sha }}
           build-args: |
             BUILDKIT_INLINE_CACHE=0
+
+      # Prune Docker after backend build
+      - name: Prune Docker after backend
+        run: docker system prune -af
 
       # 7️⃣ Build & push frontend image
       - name: Build & Push Frontend
