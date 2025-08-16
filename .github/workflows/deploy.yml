@@ -21,6 +21,11 @@ jobs:
           sudo apt-get clean
           df -h
 
+      - name: Clean Docker cache
+        run: |
+          docker system prune -af
+          docker volume prune -f
+
       # Setup Docker Buildx for multi-arch builds
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
