@@ -75,6 +75,10 @@ jobs:
           build-args: |
             BUILDKIT_INLINE_CACHE=0
 
+      # Prune Docker after frontend build
+      - name: Prune Docker after frontend
+        run: docker system prune -af
+
       # 8️⃣ SSH deploy to EC2
       - name: Deploy to EC2
         uses: webfactory/ssh-agent@v0.9.0
