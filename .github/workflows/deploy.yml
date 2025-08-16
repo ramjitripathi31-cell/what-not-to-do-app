@@ -17,7 +17,7 @@ jobs:
       # 2️⃣ Clean disk space (more aggressive)
       - name: Clean up runner disk
         run: |
-          sudo apt-get remove -y '^dotnet-.*' 'php.*' '^llvm-.*' 'mongodb-org.*'
+          sudo apt-get remove -y '^dotnet-.*' 'php.*' '^llvm-.*' 'mongodb-org.*' || true
           sudo apt-get autoremove -y
           sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/share/boost
           sudo apt-get clean
