@@ -30,7 +30,7 @@ jobs:
       - name: Build & Push Backend
         uses: docker/build-push-action@v6
         with:
-          context: ./backend
+          context: ./server
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/wntd-backend:latest
@@ -40,7 +40,7 @@ jobs:
       - name: Build & Push Frontend
         uses: docker/build-push-action@v6
         with:
-          context: ./frontend
+          context: ./client
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/wntd-frontend:latest
