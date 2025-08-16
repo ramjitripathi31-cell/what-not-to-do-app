@@ -42,6 +42,9 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/wntd-backend:latest
             ${{ secrets.DOCKER_USERNAME }}/wntd-backend:${{ github.sha }}
+          file: ./server/Dockerfile
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
 
       # Build and push frontend image
       - name: Build & Push Frontend
@@ -52,6 +55,9 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/wntd-frontend:latest
             ${{ secrets.DOCKER_USERNAME }}/wntd-frontend:${{ github.sha }}
+          file: ./client/Dockerfile
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
 
       # SSH into EC2 and run deploy script
       - name: Deploy to EC2
