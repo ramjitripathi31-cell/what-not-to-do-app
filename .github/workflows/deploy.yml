@@ -130,6 +130,9 @@ jobs:
             docker --version
           EOF
 
+      - name: Prune Docker after EC Docker install
+        run: docker system prune -af --volumes
+
       - name: Run deploy script on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo /opt/wntd/deploy.sh'
