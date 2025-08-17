@@ -99,14 +99,20 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
+      - name: Debug workspace contents
+        run: |
+          echo "Current path: $(pwd)"
+          echo "Listing repo contents..."
+          ls -R ${{ github.workspace }}
+
       - name: Copy deploy script & compose file
         run: |
           # make sure /opt/wntd exists (root-owned)
           ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo mkdir -p /opt/wntd'
 
           # copy files to /tmp (ubuntu user has write access)
-          scp -o StrictHostKeyChecking=no ./infra/docker-compose.prod.yml ubuntu@13.61.12.156:/tmp/docker-compose.prod.yml
-          scp -o StrictHostKeyChecking=no ./infra/deploy.sh ubuntu@13.61.12.156:/tmp/deploy.sh
+          scp -o StrictHostKeyChecking=no ${{ github.workspace }}/infra/docker-compose.prod.yml ubuntu@13.61.12.156:/tmp/docker-compose.prod.yml
+          scp -o StrictHostKeyChecking=no ${{ github.workspace }}/infra/deploy.sh ubuntu@13.61.12.156:/tmp/deploy.sh
 
           # move them into /opt/wntd as root and fix permissions
           ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 '
