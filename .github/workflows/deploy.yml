@@ -144,7 +144,7 @@ jobs:
             until [ $COUNT -ge $MAX_RETRIES ]
             do
               echo "Attempt $((COUNT+1)) of $MAX_RETRIES..."
-              sudo /opt/wntd/ && sudo chmod +x /opt/wntd/deploy.sh && break
+              sudo /opt/wntd/deploy.sh && sudo chmod +x /opt/wntd/deploy.sh && break
               echo "Deploy failed. Cleaning Docker and temp files..."
               docker system prune -af --volumes
               sudo rm -rf /tmp/*
