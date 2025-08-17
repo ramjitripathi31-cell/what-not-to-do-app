@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  cleanup:
+  disk-cleanup:
     runs-on: ubuntu-latest
     outputs:
       done: true
@@ -14,14 +14,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Aggressive cleanup before build
+      - name: Aggressive cleanup on runner
         run: |
           echo "Disk usage before cleanup:"
           df -h
           sudo rm -rf /usr/local/lib/android /opt/ghc /usr/share/dotnet /usr/local/share/boost ~/.cache || true
           sudo apt-get clean
           sudo docker system prune -af --volumes
-          sudo rm -rf /var/lib/docker/overlay2/*
           echo "Disk usage after cleanup:"
           df -h
 
@@ -29,7 +28,7 @@ jobs:
         run: echo "done=true" >> $GITHUB_OUTPUT
 
   build-backend:
-    needs: cleanup
+    needs: disk-cleanup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -60,7 +59,7 @@ jobs:
         run: docker system prune -af --volumes
 
   build-frontend:
-    needs: cleanup
+    needs: disk-cleanup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -90,8 +89,23 @@ jobs:
       - name: Prune Docker after frontend
         run: docker system prune -af --volumes
 
-  deploy:
+  ec2-cleanup:
     needs: [build-backend, build-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup Docker & temp files on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 << 'EOF'
+            echo "Disk usage before cleanup:"
+            df -h
+            docker system prune -af --volumes
+            sudo rm -rf /tmp/*
+            echo "Disk usage after cleanup:"
+            df -h
+          EOF
+
+  deploy:
+    needs: [build-backend, build-frontend, ec2-cleanup]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -103,8 +117,7 @@ jobs:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       - name: Test SSH Connection
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 "echo 'SSH connection successful'"
+        run: ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 "echo 'SSH connection successful'"
 
       - name: Copy deploy script & compose file
         run: |
@@ -114,7 +127,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo mv /home/ubuntu/deploy.sh /opt/wntd/ && sudo chmod +x /opt/wntd/deploy.sh'
           ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo mv /home/ubuntu/docker-compose.prod.yml /opt/wntd/'
 
-      - name: Install Docker on EC2
+      - name: Install Docker on EC2 (if missing)
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 << 'EOF'
             if ! command -v docker &> /dev/null
@@ -130,9 +143,5 @@ jobs:
             docker --version
           EOF
 
-      - name: Prune Docker after EC Docker install
-        run: docker system prune -af --volumes
-
       - name: Run deploy script on EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo /opt/wntd/deploy.sh'
+        run: ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo /opt/wntd/deploy.sh'
