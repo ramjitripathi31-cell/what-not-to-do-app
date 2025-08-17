@@ -97,7 +97,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-          
+
       - name: Cleanup Docker & temp files on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 << 'EOF'
@@ -147,6 +147,33 @@ jobs:
             fi
             docker --version
           EOF
+
+  jobs:
+    prepare-disk:
+      runs-on: ubuntu-latest
+      outputs:
+        done: true
+      steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Check disk usage before cleanup
+        run: df -h
+
+      - name: Cleanup Docker & temp files
+        run: |
+          echo "Cleaning Docker system..."
+          sudo docker system prune -af --volumes || true
+          sudo rm -rf /tmp/* ~/.cache || true
+          sudo apt-get clean || true
+          echo "Cleaning Docker overlay2 (if necessary)..."
+          sudo rm -rf /var/lib/docker/overlay2/* || true
+          echo "Disk usage after cleanup:"
+          df -h
+
+      - name: Set output
+        run: echo "done=true" >> $GITHUB_OUTPUT
+
 
       - name: Run deploy script on EC2
         run: ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo /opt/wntd/deploy.sh'
