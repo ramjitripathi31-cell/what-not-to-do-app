@@ -5,8 +5,8 @@ set -euo pipefail
 DOCKERHUB_USERNAME=ramjitripathi31cell  # replace with your username
 
 # Pull latest images
-sudo docker pull $DOCKERHUB_USERNAME/wntd-backend:latest
-sudo docker pull $DOCKERHUB_USERNAME/wntd-frontend:latest
+sudo docker pull $DOCKERHUB_USERNAME/wntd-server:latest
+sudo docker pull $DOCKERHUB_USERNAME/wntd-client:latest
 
 # Run the containers using your production compose file
 sudo docker compose -f /opt/wntd/docker-compose.prod.yml up -d

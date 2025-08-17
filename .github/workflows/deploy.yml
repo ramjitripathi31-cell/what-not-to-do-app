@@ -51,8 +51,8 @@ jobs:
           file: ./server/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/wntd-backend:latest
-            ${{ secrets.DOCKER_USERNAME }}/wntd-backend:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/wntd-server:latest
+            ${{ secrets.DOCKER_USERNAME }}/wntd-server:${{ github.sha }}
           build-args: |
             BUILDKIT_INLINE_CACHE=0
 
@@ -82,8 +82,8 @@ jobs:
           file: ./client/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/wntd-frontend:latest
-            ${{ secrets.DOCKER_USERNAME }}/wntd-frontend:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/wntd-client:latest
+            ${{ secrets.DOCKER_USERNAME }}/wntd-client:${{ github.sha }}
           build-args: |
             BUILDKIT_INLINE_CACHE=0
 
