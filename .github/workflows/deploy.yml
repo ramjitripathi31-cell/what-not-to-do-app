@@ -90,13 +90,13 @@ jobs:
       - name: Prune Docker after frontend
         run: docker system prune -af --volumes
 
-    deploy:
+  deploy:
     needs: [build-backend, build-frontend]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-
+        
       - name: Deploy to EC2
         uses: webfactory/ssh-agent@v0.9.0
         with:
