@@ -1,0 +1,17 @@
+FROM node:18
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Install nodemon globally (or use devDependency if already in package.json)
+RUN npm install -g nodemon
+
+# Copy source
+COPY . .
+
+EXPOSE 4500
+
+# Run with nodemon for hot reload
+CMD ["nodemon", "index.js"]
