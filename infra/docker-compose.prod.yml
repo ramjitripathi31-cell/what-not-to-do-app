@@ -28,6 +28,16 @@ services:
       - VITE_API_BASE=http://13.61.12.156:4500/api
     ports:
       - "82:80"      # EC2 host port 82 → container port 80
+  
+  seed:
+    image: ramjitripathi31cell/wntd-server:latest
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
+    command: ["npm", "run", "seed"]
+    restart: "no"   # Run once and exit
 
 volumes:
   mongo_data:
