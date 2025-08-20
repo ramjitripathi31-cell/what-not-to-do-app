@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 
-const API_URL = "http://localhost:4500/api/tips";
+const API_URL = `${import.meta.env.VITE_API_URL}/tips`;
 
 export default function App() {
   const [tips, setTips] = useState([]);
