@@ -88,9 +88,9 @@ export default function App() {
           className="border p-2 rounded focus:ring-2 focus:ring-blue-400"
         >
           <option value="">All</option>
-          <option value="legal">Legal</option>
-          <option value="financial">Financial</option>
-          <option value="health">Health</option>
+          <option value="Legal">Legal</option>
+          <option value="Finance">Finance</option>
+          <option value="Health">Health</option>
         </select>
       </div>
 

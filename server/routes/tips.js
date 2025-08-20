@@ -2,13 +2,20 @@ const express = require("express");
 const router = express.Router();
 const Tip = require("../models/Tip");
 
-// GET all tips with search + pagination
+// GET all tips with search + category filter + pagination
 router.get("/", async (req, res) => {
   try {
-    const { page = 1, limit = 10, search = "" } = req.query;
-    const query = search
-      ? { title: { $regex: search, $options: "i" } }
-      : {};
+    const { page = 1, limit = 10, search = "", category = "" } = req.query;
+
+    // Build dynamic query
+    const query = {};
+    if (search) {
+      query.title = { $regex: search, $options: "i" }; // case-insensitive search
+    }
+    if (category) {
+  query.category = { $regex: new RegExp(`^${category}$`, "i") };
+}
+
 
     const tips = await Tip.find(query)
       .skip((page - 1) * limit)
@@ -17,7 +24,12 @@ router.get("/", async (req, res) => {
 
     const total = await Tip.countDocuments(query);
 
-    res.json({ data: tips, total, page: Number(page), limit: Number(limit) });
+    res.json({
+      data: tips,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -37,7 +49,9 @@ router.post("/", async (req, res) => {
 // PUT update tip
 router.put("/:id", async (req, res) => {
   try {
-    const tip = await Tip.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const tip = await Tip.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.json(tip);
   } catch (err) {
     res.status(400).json({ error: err.message });
