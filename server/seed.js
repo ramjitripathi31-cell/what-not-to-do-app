@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Tip = require("./models/Tip");
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/whatnotdb";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://mongo:27017/whatnotdb";
 
 const seedData = [
   {
