@@ -116,9 +116,11 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no infra/deploy.sh ubuntu@13.61.12.156:/home/ubuntu/
           scp -o StrictHostKeyChecking=no infra/docker-compose.prod.yml ubuntu@13.61.12.156:/home/ubuntu/
+          scp -o StrictHostKeyChecking=no infra/.env.production ubuntu@13.61.12.156:/home/ubuntu/
 
           ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo mv /home/ubuntu/deploy.sh /opt/wntd/ && sudo chmod +x /opt/wntd/deploy.sh'
           ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo mv /home/ubuntu/docker-compose.prod.yml /opt/wntd/'
+          ssh -o StrictHostKeyChecking=no ubuntu@13.61.12.156 'sudo mv /home/ubuntu/.env.production /opt/wntd/'
 
       - name: Install Docker on EC2 (if missing)
         run: |

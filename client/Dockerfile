@@ -1,9 +1,18 @@
 # Stage 1: Build the app
 FROM node:20 AS build
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm install
+
 COPY . .
+
+# 👇 explicitly set NODE_ENV so Vite picks the right env file
+ENV NODE_ENV=production
+
+# 👇 tell Vite to load .env.prod
+RUN cp .env.production .env
+
 RUN npm run build
 
 # Stage 2: Serve with nginx

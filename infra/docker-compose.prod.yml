@@ -16,26 +16,24 @@ services:
     image: ramjitripathi31cell/wntd-server:latest
     restart: unless-stopped
     env_file:
-      - .env.production
+      - /opt/wntd/.env.production   # ✅ backend secrets (DB, JWT, etc.)
     ports:
       - "4500:4500"
 
   frontend:
     image: ramjitripathi31cell/wntd-client:latest
     restart: unless-stopped
-    env_file:
-      - ./client/.env.production
     ports:
-      - "82:80"
-  
+      - "82:80"   # frontend doesn’t need env_file in prod
+
   seed:
     image: ramjitripathi31cell/wntd-server:latest
     depends_on:
       - mongo
     env_file:
-      - .env.production
+      - /opt/wntd/.env.production
     command: ["npm", "run", "seed"]
-    restart: "no"   # run once and exit
+    restart: "no"
 
 volumes:
   mongo_data:
